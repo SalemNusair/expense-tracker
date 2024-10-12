@@ -1,9 +1,11 @@
-import React, { useLayoutEffect } from "react";
+import React, { useContext, useLayoutEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
 import Button from "../components/UI/Button";
+import { ExpensesContext } from "../store/expenses-context";
 const ManageExpense = ({ route, navigation }) => {
+    const expensesCtx = useContext(ExpensesContext);
     const editedExpenseId = route.params?.expenseId;
     // the two !! to convert to bolean
     const isEditing = !!editedExpenseId;
@@ -13,12 +15,26 @@ const ManageExpense = ({ route, navigation }) => {
         });
     }, [navigation, isEditing]);
     const deleteExpenseHandler = () => {
+        expensesCtx.deleteExpense(editedExpenseId);
         navigation.goBack();
     };
     const cancelHandler = () => {
         navigation.goBack();
     };
     const confirmHandler = () => {
+        if (isEditing) {
+            expensesCtx.updateExpense(editedExpenseId, {
+                description: "test!!!",
+                amount: 29.2,
+                date: new Date("2024-10-08"),
+            });
+        } else {
+            expensesCtx.addExpense({
+                description: "test",
+                amount: 19.99,
+                date: new Date("2024-10-08"),
+            });
+        }
         navigation.goBack();
     };
     return (
